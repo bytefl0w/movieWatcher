@@ -1,17 +1,14 @@
 //crud.h
 #ifndef CRUD_H
 #define CRUD_H
-//#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "database.h"
 
-typedef struct{
-  char* tconst, titleType, primaryTitle;
-  char* originalTitle, isAdult, genres;
-  int startYear, endYear, runtimeMinutes;
-} Movie;
-
-Movie* crudCreate();
-Movie crudRetrieve();
-Movie crudUpdate();
-Movie crudDelete();
+void crudCreate(FILE *fp);
+void crudRetrieve();
+void crudUpdate();
+void crudDelete();
+void crudTest(char* fname);
 
 #endif
