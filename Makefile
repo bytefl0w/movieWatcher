@@ -6,7 +6,7 @@ TARGET := bin/runner
 SOURCES := $(shell find $(SOURCEDIR) -type f -name *.c)
 OBJECTS := $(patsubst $(SOURCEDIR)/%,$(BUILDDIR)/%,$(SOURCES:.c=.o))
 CFLAGS := -g # -Wall
-LIB := -L lib
+LIB := -lncurses -lpanel -lmenu
 INC := -I include
 
 $(TARGET): $(OBJECTS)
@@ -21,7 +21,7 @@ clean:
 	@echo " Cleaning..."
 	@echo " $(RM) -r $(BUILDDIR) $(TARGET)"; $(RM) -r $(BUILDDIR) $(TARGET)
 
-tester:
+test:
 	$(CC) $(CFLAGS) test/testing.c $(INC) $(LIB) -o bin/testing
 
 .PHONY: clean
