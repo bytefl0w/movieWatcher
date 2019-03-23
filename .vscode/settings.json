@@ -1,6 +1,10 @@
 {
     "C_Cpp.dimInactiveRegions": false,
     "files.associations": {
-        "fileio.h": "c"
+        "fileio.h": "c",
+        "crud.h": "c",
+        "unordered_map": "c",
+        "unordered_set": "c",
+        "stdio.h": "c"
     }
 }

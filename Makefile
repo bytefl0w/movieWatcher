@@ -1,11 +1,11 @@
 CC:= gcc # compiler to be used
 SOURCEDIR := src
 BUILDDIR := build
-TARGET := bin/runner
+TARGET := movieWatcher
 
 SOURCES := $(shell find $(SOURCEDIR) -type f -name *.c)
 OBJECTS := $(patsubst $(SOURCEDIR)/%,$(BUILDDIR)/%,$(SOURCES:.c=.o))
-CFLAGS := -g # -Wall
+CFLAGS := -g -std=c11 # -Wall
 LIB := -lncurses -lpanel -lmenu
 INC := -I include
 
@@ -22,6 +22,6 @@ clean:
 	@echo " $(RM) -r $(BUILDDIR) $(TARGET)"; $(RM) -r $(BUILDDIR) $(TARGET)
 
 test:
-	$(CC) $(CFLAGS) test/testing.c $(INC) $(LIB) -o bin/testing
+	$(CC) $(CFLAGS) $^ test/testing.c $(INC) $(LIB) -o bin/testing
 
 .PHONY: clean
