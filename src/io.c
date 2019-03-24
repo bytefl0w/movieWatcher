@@ -46,51 +46,17 @@ void parseFile(FILE *fp, struct tree **root, int key){
         i=0;
     }
 }
-
-//creates a crud record
-void crudCreate(){
-    
-}
-
-//
-void crudRetrieve(){
-
-}
-void crudUpdate(){
-
-}
-void crudDelete(){
+// ultility for saving AVL tree to user log file after selecting "Save and Quit"
+void writeTreeToFile(){
 
 }
 
-// Testing the CRUD implementation
-void crudTest(char* fname){
-    int ch = 0;
-    FILE *fp;
-    printf("[1] Create\n");
-    printf("[2] Retrieve\n");
-    printf("[3] Update\n");
-    printf("[4] Delete\n");
-    while(1){
-        scanf("%d", &ch);
-        switch(ch){
-            case 1:
-                fp = fopen(fname, "a");
-                crudCreate();
-                break;
-            case 2:
-                fp = fopen(fname, "rb");
-                crudRetrieve();
-                break;
-            case 3:
-                fp = fopen(fname, "r+");
-                crudUpdate();
-                break;
-            case 4:
-                crudDelete();
-                break;
-            default:
-                break;
-        }
-    }
+// looks up tree node and update part of the contents 
+void updateEntry(){
+
+}
+
+// Lists the current user's AVL tree, built from there .log file
+void listUserTree(){
+
 }

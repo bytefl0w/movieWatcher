@@ -8,10 +8,7 @@
 //functions
 char *copyString(char str[]);
 void parseFile(FILE *fp, struct tree **root, int key);
-void crudCreate();
-void crudRetrieve();
-void crudUpdate();
-void crudDelete();
-void crudTest(char* fname);
+void writeTreeToFile();
+void updateEntry();
 
 #endif
