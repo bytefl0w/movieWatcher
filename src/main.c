@@ -27,6 +27,8 @@ void clearEOL(){
 
 int main(int argc, char* argv[]){
     FILE *user, *movies = fopen("movie_records", "r+");
+    struct tree *movie_tree = TREE_EMPTY;
+    struct tree *user_tree = TREE_EMPTY;
     bool exit_flag = false, valid_choice = false;
     char fileLocation[33] = "./usr/";
     char input[25], ch;
@@ -35,6 +37,9 @@ int main(int argc, char* argv[]){
     if(movies == NULL){
         printf("No movie_records file found. Exiting...\n");
         exit(EXIT_FAILURE);
+    }else{
+        parseFile(movies, &movie_tree, 2);
+        printf("Movie Tree Created!\n");
     }
     system("ls usr/");
     while(!exit_flag){
@@ -58,7 +63,8 @@ int main(int argc, char* argv[]){
             input[char_count] = '\0';
             strcat(fileLocation, input);
             strcat(fileLocation, ".log");
-            user = fopen(fileLocation, "w");
+            user = fopen(fileLocation, "r+");
+            parseFile(user, &user_tree, 2);
             exit_flag = true;
         }
     }
@@ -76,13 +82,19 @@ int main(int argc, char* argv[]){
             case '1':
                 printf("Add Movie to Log");
                 clearEOL();
+
                 break;
             case '2':
                 printf("Remove Movie from Log\n");
                 clearEOL();
+                //list user movie log
+                //number the movie titles in log from 1..*
+                //ask which movie they want to remove
                 break;
             case '3':
                 printf("List Movie Log\n");
+                treePrint(user_tree, &i);
+                getchar();
                 clearEOL();
                 break;
             case '4':

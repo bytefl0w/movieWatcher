@@ -59,7 +59,7 @@ int treeHeight(const struct tree *root);
 size_t treeSize(const struct tree *root);
 
 /* pretty-print the contents of a tree */
-void treePrint(const struct tree *root);
+void treePrint(const struct tree *root, int *i);
 
 /* return the number of elements in tree less than target */
 size_t treeRank(const struct tree *root, int target);

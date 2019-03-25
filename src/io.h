@@ -8,7 +8,7 @@
 //functions
 char *copyString(char str[]);
 void parseFile(FILE *fp, struct tree **root, int key);
-void writeTreeToFile();
+void writeTreeToFile(FILE *fp);
 void updateEntry();
 
 #endif

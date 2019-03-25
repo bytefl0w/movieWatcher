@@ -266,67 +266,51 @@ void treeDelete(struct tree **root, char *target){
     }
 }
 
-
-/* how far to indent each level of the tree */
-#define INDENTATION_LEVEL (2)
-
-/* print contents of a tree, indented by depth */
-static void treePrintIndented(const struct tree *root, int depth){
-    int i;
-
-    if(root != 0) {
-        treePrintIndented(root->child[LEFT], depth+1);
-
-        for(i = 0; i < INDENTATION_LEVEL*depth; i++) {
-            putchar(' ');
-        }
-        printf("%s Height: %d Size: %zu (%p)\n", root->key, root->height, root->size, (void *) root);
-
-        treePrintIndented(root->child[RIGHT], depth+1);
-    }
-}
-
 /* print the contents of a tree */
-void treePrint(const struct tree *root){
-    treePrintIndented(root, 0);
-}
-
-size_t treeRank(const struct tree *t, int target){
-    size_t rank = 0;
-
-    while(t && t->key != target) {
-        if(t->key < target) {
-            /* go right */
-            /* root and left subtree are all less than target */
-            rank += (1 + treeSize(t->child[LEFT]));
-            t = t->child[RIGHT];
-        } else {
-            /* go left */
-            t = t->child[LEFT];
-        }
+void treePrint(const struct tree *root, int *i){
+    if(root != 0) {
+        treePrint(root->child[LEFT], i);
+        printf("[%d] %s %s %s %s %s %s %s %s %s\n", *i++, root->tconst, root->titleType, root->primaryTitle, root->originalTitle, root->genres, root->isAdult, root->startYear, root->endYear, root->runtimeMinutes);
+        treePrint(root->child[RIGHT], i);
     }
-
-    /* we must also count left subtree */
-    return rank + treeSize(t->child[LEFT]);
 }
 
-int treeUnrank(const struct tree *t, size_t rank){
-    size_t leftSize;
+//size_t treeRank(const struct tree *t, int target){
+//    size_t rank = 0;
+//
+//    while(t && t->key != target) {
+//        if(t->key < target) {
+//            /* go right */
+//            /* root and left subtree are all less than target */
+//            rank += (1 + treeSize(t->child[LEFT]));
+//            t = t->child[RIGHT];
+//        } else {
+//            /* go left */
+//            t = t->child[LEFT];
+//        }
+//    }
+//
+//    /* we must also count left subtree */
+//    return rank + treeSize(t->child[LEFT]);
+//}
 
-    /* basic idea: if rank < treeSize(child[LEFT]), recurse in left child */
-    /* if it's equal, return the root */
-    /* else recurse in right child with rank = rank - treeSize(child[LEFT]) - 1 */
-    while(rank != (leftSize = treeSize(t->child[LEFT]))) {
-        if(rank < leftSize) {
-            t = t->child[LEFT];
-        } else {
-            t = t->child[RIGHT];
-            rank -= (leftSize + 1);
-        }
-    }
-
-    return t->key;
-}
+//int treeUnrank(const struct tree *t, size_t rank){
+//    size_t leftSize;
+//
+//    /* basic idea: if rank < treeSize(child[LEFT]), recurse in left child */
+//    /* if it's equal, return the root */
+//    /* else recurse in right child with rank = rank - treeSize(child[LEFT]) - 1 */
+//    while(rank != (leftSize = treeSize(t->child[LEFT]))) {
+//        if(rank < leftSize) {
+//            t = t->child[LEFT];
+//        } else {
+//            t = t->child[RIGHT];
+//            rank -= (leftSize + 1);
+//        }
+//    }
+//
+//    return t->key;
+//}
 
 /* check that aggregate data is correct throughout the tree */
 void treeSanityCheck(const struct tree *root){

@@ -47,8 +47,12 @@ void parseFile(FILE *fp, struct tree **root, int key){
     }
 }
 // ultility for saving AVL tree to user log file after selecting "Save and Quit"
-void writeTreeToFile(){
-
+void treePrintToFile(const struct tree *root, FILE *fp){
+    if(root != 0){
+        treePrintToFile(root->child[0], fp);
+        fprintf(fp, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", root->tconst, root->titleType, root->primaryTitle, root->originalTitle, root->genres, root->isAdult, root->startYear, root->endYear, root->runtimeMinutes);
+        treePrintToFile(root->child[1], fp);
+    }
 }
 
 // looks up tree node and update part of the contents 
@@ -58,5 +62,5 @@ void updateEntry(){
 
 // Lists the current user's AVL tree, built from there .log file
 void listUserTree(){
-
+    
 }
