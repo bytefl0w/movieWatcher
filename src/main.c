@@ -28,18 +28,22 @@ void clearEOL(){
 int main(int argc, char* argv[]){
     FILE *user, *movies = fopen("movie_records", "r+");
     struct tree *movie_tree = TREE_EMPTY;
+    struct tree *tt_movie_tree = TREE_EMPTY;
     struct tree *user_tree = TREE_EMPTY;
     bool exit_flag = false, valid_choice = false;
     char fileLocation[33] = "./usr/";
-    char input[25], ch;
+    char input[25], ch, search[200], *p = NULL;
     int i=0, char_count=0;
     printf("***movieWatcher Program***\n****Welcome****\n");
     if(movies == NULL){
         printf("No movie_records file found. Exiting...\n");
         exit(EXIT_FAILURE);
     }else{
+        printf("Loading...\n");
         parseFile(movies, &movie_tree, 2);
-        printf("Movie Tree Created!\n");
+        fclose(movies);
+        movies = fopen("movie_records", "r+");
+        parseFile(movies, &tt_movie_tree, 0);
     }
     system("ls usr/");
     while(!exit_flag){
@@ -80,9 +84,18 @@ int main(int argc, char* argv[]){
         scanf("%c", &ch);
         switch(ch){
             case '1':
-                printf("Add Movie to Log");
                 clearEOL();
-
+                printf("Add Movie to Log\n");
+                fgets(search, 200, stdin);
+                if((p = strchr(search, '\n'))) *p = 0;
+                searchTree(movie_tree, search);
+                printf("Type in index number (ttXXXXXX): ");
+                fgets(search, 10, stdin);
+                puts(search);
+                printf("Hey\n");
+                treeUserInsert(&(*user_tree), treeSpecificSearch(tt_movie_tree, search));
+                //Ask for date or just use current date
+                //Digital, bluray, or dvd
                 break;
             case '2':
                 printf("Remove Movie from Log\n");
@@ -93,12 +106,14 @@ int main(int argc, char* argv[]){
                 break;
             case '3':
                 printf("List Movie Log\n");
-                treePrint(user_tree, &i);
+                treePrint(user_tree);
                 getchar();
                 clearEOL();
                 break;
             case '4':
                 printf("Update Movie Entry\n");
+                //List contents of movies in log
+                //Ask which one they would like to update
                 clearEOL();
                 break;
             case '5':

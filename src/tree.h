@@ -13,10 +13,17 @@
 #define RIGHT (1)
 #define TREE_NUM_CHILDREN (2)
 #define MAX_CHAR 200
+static int count = 0;
+
 
 struct tree {
     /* we'll make this an array so that we can make some operations symmetric */
     struct tree *child[TREE_NUM_CHILDREN];
+
+    //User Information
+    char mediaType;
+
+    //IMDB Database Information
     char tconst[9];
     char titleType[30];
     char primaryTitle[MAX_CHAR];
@@ -26,6 +33,7 @@ struct tree {
     char startYear[4];
     char endYear[4];
     char runtimeMinutes[30];
+
     char *key;
     int height;    /* height of this node */
     size_t size;   /* size of subtree rooted at this node */
@@ -38,7 +46,7 @@ struct tree {
 void treeDestroy(struct tree **root);
 
 /* insert an element into a tree pointed to by root */
-void treeInsert(struct tree **root, char **newElement, int key);
+void treeInitInsert(struct tree **root, char **newElement, int key);
 
 /* return 1 if target is in tree, 0 otherwise */
 /* we allow root to be modified to allow for self-balancing trees */
@@ -55,11 +63,13 @@ void treeDelete(struct tree **root, char *target);
 /* return height of tree */
 int treeHeight(const struct tree *root);
 
+void treeSinglePrint(const struct tree *root);
+
 /* return size of tree */
 size_t treeSize(const struct tree *root);
 
 /* pretty-print the contents of a tree */
-void treePrint(const struct tree *root, int *i);
+void treePrint(const struct tree *root);
 
 /* return the number of elements in tree less than target */
 size_t treeRank(const struct tree *root, int target);
@@ -71,4 +81,12 @@ int treeUnrank(const struct tree *root, size_t rank);
 /* check that aggregate data is correct throughout the tree */
 void treeSanityCheck(const struct tree *root);
 
-void searchTree(struct tree **root, char *term);
+struct tree *searchTree(struct tree *root, char *term);
+
+void resetCount();
+
+char *lowerCaseString(char *input);
+
+void treeUserInsert(struct tree **user, struct tree *node);
+
+struct tree *treeSpecificSearch(struct tree *root, char *term);

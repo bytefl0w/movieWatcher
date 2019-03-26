@@ -6,9 +6,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
+#include <unistd.h>
 #include "tree.h"
 #include "io.h"
-
 
 /* utility function to parse the "movie_records" file */
 struct tree;
@@ -25,12 +26,11 @@ char *copyString(char str[]){
 void parseFile(FILE *fp, struct tree **root, int key){
     char lineBuf[450]; //line buffer of the file
     char *dataEntries[9]; //data parsed from the file that will be put into a node of the AVL tree
-    char *delim = "\t"; //delimiter
+    char *delim = "\t\n"; //delimiter
     char *token;
     int i = 0;
     while(fgets(lineBuf, sizeof(lineBuf), fp)){
         token = strtok(lineBuf, delim);
-        //printf("Hi\n");
         while(token != NULL){
             //printf("yo\n");
             //dataEntries[i] = malloc(strlen(token)* sizeof(char));
@@ -38,13 +38,10 @@ void parseFile(FILE *fp, struct tree **root, int key){
             token = strtok(NULL, delim);
             i++;
         }
-        //printf("I'm here\n");
-        treeInsert(&(*root), dataEntries, key);
-        //for(i=0;i<9;i++)
-            //free(dataEntries[i]);
-        //free(*dataEntries);
+        treeInitInsert(&(*root), dataEntries, key);
         i=0;
     }
+    //CLEARBUF()
 }
 // ultility for saving AVL tree to user log file after selecting "Save and Quit"
 void treePrintToFile(const struct tree *root, FILE *fp){
@@ -55,9 +52,9 @@ void treePrintToFile(const struct tree *root, FILE *fp){
     }
 }
 
-// looks up tree node and update part of the contents 
-void updateEntry(){
-
+void updateMovieEntry(){
+    printf("Media Type (1=dvd, 2=bluray, 3=digital): ");
+    printf("Date Acquired (MM/DD/YYYY): ");
 }
 
 // Lists the current user's AVL tree, built from there .log file
