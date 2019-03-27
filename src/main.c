@@ -68,6 +68,8 @@ int main(int argc, char* argv[]){
             strcat(fileLocation, input);
             strcat(fileLocation, ".log");
             user = fopen(fileLocation, "r+");
+            if(user == NULL)
+                user = fopen(fileLocation, "w+");
             parseFile(user, &user_tree, 2);
             exit_flag = true;
         }
@@ -92,20 +94,29 @@ int main(int argc, char* argv[]){
                 printf("Type in index number (ttXXXXXX): ");
                 fgets(search, 10, stdin);
                 puts(search);
-                printf("Hey\n");
-                treeUserInsert(&(*user_tree), treeSpecificSearch(tt_movie_tree, search));
+                struct tree *tempNode = treeSpecificSearch(tt_movie_tree, search);
+                if(tempNode == NULL)
+                    break;
+                treeUserInsert(&user_tree, tempNode);
+                treePrint(user_tree);
+                clearEOL();
                 //Ask for date or just use current date
                 //Digital, bluray, or dvd
                 break;
-            case '2':
+            case '2': //WORKS
                 printf("Remove Movie from Log\n");
                 clearEOL();
+                treePrint(user_tree);
+                printf("Enter index number to delete (ttXXXXXX): ");
+                fgets(search, 10, stdin);
+                if((p = strchr(search, '\n'))) *p = 0;
+                puts(search);
+                treeDelete(&user_tree, search);
                 //list user movie log
-                //number the movie titles in log from 1..*
                 //ask which movie they want to remove
                 break;
             case '3':
-                printf("List Movie Log\n");
+                printf("List Movie Log\n"); //WORKS
                 treePrint(user_tree);
                 getchar();
                 clearEOL();
@@ -116,12 +127,15 @@ int main(int argc, char* argv[]){
                 //Ask which one they would like to update
                 clearEOL();
                 break;
-            case '5':
+            case '5': //WORKS
                 printf("Save and Quit\n");
+                fclose(user);
+                fopen(fileLocation, "w");
+                writeTreeToFile(user_tree, user);
                 exit_flag = true;
                 clearEOL();
                 break;
-            default:
+            default: //WORKS
                 printf("Not a vaild option. Try again.\n");
                 clearEOL();
                 break;

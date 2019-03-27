@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 #include "tree.h"
 #include "io.h"
 
@@ -144,7 +145,6 @@ static void treeRebalance(struct tree **root){
     }
 }
 
-
 /* free all elements of a tree, replacing it with TREE_EMPTY */
 void  treeDestroy(struct tree **root){
     int i;
@@ -163,16 +163,17 @@ void treeUserInsert(struct tree **user, struct tree *node){
         e = malloc(sizeof(*e));
         assert(e);
         //*e->tconst = malloc();
-        strcpy(e->tconst,node->tconst);
-        strcpy(e->titleType,node->titleType);
-        strcpy(e->primaryTitle, node->primaryTitle);
-        strcpy(e->originalTitle, node->originalTitle);
-        strcpy(e->genres, node->genres);
-        strcpy(e->isAdult, node->isAdult);
-        strcpy(e->startYear, node->startYear);
-        strcpy(e->endYear, node->endYear);
-        strcpy(e->runtimeMinutes, node->runtimeMinutes);
-        e->key = node->primaryTitle;
+        strncpy(e->tconst, node->tconst, 9);
+        strncpy(e->titleType, node->titleType, 30);
+        strncpy(e->primaryTitle, node->primaryTitle, 200);
+        strncpy(e->originalTitle, node->originalTitle, 200);
+        strncpy(e->genres, node->genres, 200);
+        strncpy(e->isAdult, node->isAdult, 4);
+        strncpy(e->startYear, node->startYear, 4);
+        strncpy(e->endYear, node->endYear, 4);
+        strncpy(e->runtimeMinutes, node->runtimeMinutes, 30);
+        //printf("test\n");
+        e->key = node->tconst;
         e->child[LEFT] = e->child[RIGHT] = 0;
 
         *user = e;
@@ -181,6 +182,7 @@ void treeUserInsert(struct tree **user, struct tree *node){
         return;
     } else {
         /* do this recursively so we can fix data on the way back out */
+        //printf("hi\n");
         if(strcmp(node->key,(*user)->key) < 0){
             treeUserInsert(&(*user)->child[0], node);
         }else if(strcmp(node->key,(*user)->key) > 0){
@@ -201,15 +203,15 @@ void treeInitInsert(struct tree **root, char **newElement, int key){
         e = malloc(sizeof(*e));
         assert(e);
         //*e->tconst = malloc();
-        strcpy(e->tconst,newElement[0]);
-        strcpy(e->titleType,newElement[1]);
-        strcpy(e->primaryTitle, newElement[2]);
-        strcpy(e->originalTitle, newElement[3]);
-        strcpy(e->genres, newElement[4]);
-        strcpy(e->isAdult, newElement[5]);
-        strcpy(e->startYear, newElement[6]);
-        strcpy(e->endYear, newElement[7]);
-        strcpy(e->runtimeMinutes, newElement[8]);
+        strncpy(e->tconst,newElement[0], strlen(newElement[0]));
+        strncpy(e->titleType,newElement[1], strlen(newElement[1]));
+        strncpy(e->primaryTitle, newElement[2], strlen(newElement[2]));
+        strncpy(e->originalTitle, newElement[3], strlen(newElement[3]));
+        strncpy(e->genres, newElement[4], strlen(newElement[4]));
+        strncpy(e->isAdult, newElement[5], strlen(newElement[5]));
+        strncpy(e->startYear, newElement[6], strlen(newElement[6]));
+        strncpy(e->endYear, newElement[7], strlen(newElement[7]));
+        strncpy(e->runtimeMinutes, newElement[8], strlen(newElement[8]));
         e->key = newElement[key];
         e->child[LEFT] = e->child[RIGHT] = 0;
 
@@ -265,8 +267,11 @@ void treeDelete(struct tree **root, char *target){
 
     /* do nothing if target not in tree */
     if(*root) {
+        printf("sup\n");
+        printf("key: %s\n", (*root)->titleType);
         //(*root)->key == target
-        if(strcmp((*root)->key,target) == 0) {
+        if(strncmp((*root)->key,target,9) == 0) {
+            printf("Match\n");
             if((*root)->child[RIGHT]) {
                 /* replace root with min value in right subtree */
                 strcpy((*root)->key,treeDeleteMin(&(*root)->child[RIGHT]));
@@ -278,9 +283,9 @@ void treeDelete(struct tree **root, char *target){
             }
         } else {
             //treeDelete(&(*root)->child[(*root)->key < target], target);
-            if(strcmp(target,(*root)->key) < 0){
+            if(strncmp(target,(*root)->key,9) < 0){
                 treeDelete(&(*root)->child[0], target);
-            }else if(strcmp(target,(*root)->key) > 0){
+            }else if(strncmp(target,(*root)->key,9) > 0){
                 treeDelete(&(*root)->child[1], target);
             }
         }
@@ -295,7 +300,7 @@ void treeDelete(struct tree **root, char *target){
 void treePrint(const struct tree *root){
     if(root != 0) {
         treePrint(root->child[LEFT]);
-        
+        treeSinglePrint(root);
         treePrint(root->child[RIGHT]);
     }
 }
@@ -318,9 +323,10 @@ void treeSanityCheck(const struct tree *root){
 
 void lookForSimilar(const struct tree *root, char *term){
     if(root != 0) {
-        //if(strstr(root->key, term)){
+        //if(strstr(root->key, term) != NULL){
             lookForSimilar(root->child[LEFT], term);
-            treeSinglePrint(root);
+            if(strstr(root->key, term) != NULL)
+                treeSinglePrint(root);
             lookForSimilar(root->child[RIGHT], term);
         //}
     }
@@ -328,7 +334,7 @@ void lookForSimilar(const struct tree *root, char *term){
 
 /* a general search the tree to see if the string "term" matches any of the nodes in the tree */
 struct tree *searchTree(struct tree *root, char *term){
-    int i =0;
+    int i = 0;
     if(root == 0) {
         printf("Entry could not be found\n");
         return NULL;
@@ -336,10 +342,8 @@ struct tree *searchTree(struct tree *root, char *term){
         lookForSimilar(root, term);
     } else if(strcmp(root->key, term) == 0){
         return root;
-    }
-    else{
-        //treeInsert(&(*root)->child[(*root)->key < newElement], newElement);
-        printf("%s\n", root->key);
+    } else{
+        //printf("%s\n",root->key);
         if(strcmp(term,root->key) < 0){
             searchTree(root->child[LEFT], term);
         }else if(strcmp(term,root->key) > 0){
@@ -359,15 +363,14 @@ struct tree *treeSpecificSearch(struct tree *root, char *term){
         return root;
     }
     else{
-        printf("%s\n", root->key);
-        printf("LEFT: %s RIGHT: %s\n", root->child[LEFT]->key, root->child[RIGHT]->key);
+        //printf("%s\n", root->key);
+        //printf("LEFT: %s RIGHT: %s\n", root->child[LEFT]->key, root->child[RIGHT]->key);
         if(strcmp(term,root->key) < 0){
             treeSpecificSearch(root->child[LEFT], term);
         }else if(strcmp(term,root->key) > 0){
             treeSpecificSearch(root->child[RIGHT], term);
         }
     }
-    return NULL;
 }
 
 void treeSinglePrint(const struct tree *root){

@@ -15,13 +15,17 @@
 #define MAX_CHAR 200
 static int count = 0;
 
+struct time {
+    int day, month, year;
+};
 
 struct tree {
     /* we'll make this an array so that we can make some operations symmetric */
     struct tree *child[TREE_NUM_CHILDREN];
 
     //User Information
-    char mediaType;
+    char *mediaType;
+    struct time *dateAcquired;
 
     //IMDB Database Information
     char tconst[9];

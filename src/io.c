@@ -44,20 +44,49 @@ void parseFile(FILE *fp, struct tree **root, int key){
     //CLEARBUF()
 }
 // ultility for saving AVL tree to user log file after selecting "Save and Quit"
-void treePrintToFile(const struct tree *root, FILE *fp){
+void writeTreeToFile(const struct tree *root, FILE *fp){
     if(root != 0){
-        treePrintToFile(root->child[0], fp);
-        fprintf(fp, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", root->tconst, root->titleType, root->primaryTitle, root->originalTitle, root->genres, root->isAdult, root->startYear, root->endYear, root->runtimeMinutes);
-        treePrintToFile(root->child[1], fp);
+        writeTreeToFile(root->child[0], fp);
+        fprintf(fp, "%.9s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", root->tconst, root->titleType, root->primaryTitle, root->originalTitle, root->genres, root->isAdult, root->startYear, root->endYear, root->runtimeMinutes);
+        writeTreeToFile(root->child[1], fp);
     }
 }
 
-void updateMovieEntry(){
-    printf("Media Type (1=dvd, 2=bluray, 3=digital): ");
-    printf("Date Acquired (MM/DD/YYYY): ");
-}
+void updateMovieEntry(struct tree *node){
+    int choice=0, isvalid = 0, items=0;
+    char buffer[10];
+    struct time *dateAcquired = malloc(sizeof(*dateAcquired));
+    while(isvalid == 0){
+        printf("Media Type (1=dvd, 2=bluray, 3=digital): ");
+        scanf("%d", choice);
+        switch(choice){
+            case 1:
+                *node->mediaType = copyString("dvd");
+                isvalid = 1;
+                break;
+            case 2:
+                *node->mediaType = copyString("bluray");
+                isvalid = 1;
+                break;
+            case 3:
+                *node->mediaType = copyString("digital");
+                isvalid = 1;
+                break;
+            default:
+                printf("Error. Invalid input, try again.\n");
+                break;
+        }
+    }
+    isvalid = 0;
+    while(isvalid == 0){
+        printf("Date Acquired (MM/DD/YYYY): ");
+        items = scanf("%02d/%02d/%04d", &dateAcquired->month, &dateAcquired->day, &dateAcquired->year);
+        if(items == 3){
+            node->dateAcquired = dateAcquired;
+            isvalid = 1;
+        } else{
+            printf("Error. Invalid input, try again.\n");
+        }
+    }
 
-// Lists the current user's AVL tree, built from there .log file
-void listUserTree(){
-    
 }
