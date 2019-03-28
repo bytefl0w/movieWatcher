@@ -40,10 +40,10 @@ int main(int argc, char* argv[]){
         exit(EXIT_FAILURE);
     }else{
         printf("Loading...\n");
-        parseFile(movies, &movie_tree, 2);
+        parseFile(movies, &movie_tree, 2, false);
         fclose(movies);
         movies = fopen("movie_records", "r+");
-        parseFile(movies, &tt_movie_tree, 0);
+        parseFile(movies, &tt_movie_tree, 0, false);
     }
     system("ls usr/");
     while(!exit_flag){
@@ -70,7 +70,7 @@ int main(int argc, char* argv[]){
             user = fopen(fileLocation, "r+");
             if(user == NULL)
                 user = fopen(fileLocation, "w+");
-            parseFile(user, &user_tree, 2);
+            parseFile(user, &user_tree, 2, true);
             exit_flag = true;
         }
     }
@@ -96,24 +96,21 @@ int main(int argc, char* argv[]){
                 struct tree *tempNode = treeSpecificSearch(tt_movie_tree, search);
                 if(tempNode == NULL)
                     break;
-                editUserDataForEntry(tempNode);
-                treeUserInsert(&user_tree, tempNode);
+                editUserDataForEntry(treeUserInsert(&user_tree, tempNode));
                 treePrint(user_tree, true);
                 clearEOL();
                 //Ask for date or just use current date
                 //Digital, bluray, or dvd
                 break;
-            case '2': //WORKS
+            case '2': 
                 printf("Remove Movie from Log\n");
                 clearEOL();
                 treePrint(user_tree, true);
                 printf("Enter index number to delete (ttXXXXXX): ");
                 fgets(search, 10, stdin);
                 if((p = strchr(search, '\n'))) *p = 0;
-                puts(search);
                 treeDelete(&user_tree, search);
-                //list user movie log
-                //ask which movie they want to remove
+                clearEOL();
                 break;
             case '3':
                 printf("List Movie Log\n"); //WORKS
@@ -123,8 +120,7 @@ int main(int argc, char* argv[]){
                 break;
             case '4':
                 printf("Update Movie Entry\n");
-                //List contents of movies in log
-                //Ask which one they would like to update
+                
                 clearEOL();
                 break;
             case '5': //WORKS

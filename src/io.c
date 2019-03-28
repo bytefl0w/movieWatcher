@@ -23,9 +23,9 @@ char *copyString(char str[]){
     return copy;
 }
 
-void parseFile(FILE *fp, struct tree **root, int key){
+void parseFile(FILE *fp, struct tree **root, int key, bool isUserData){
     char lineBuf[450]; //line buffer of the file
-    char *dataEntries[9]; //data parsed from the file that will be put into a node of the AVL tree
+    char *dataEntries[11]; //data parsed from the file that will be put into a node of the AVL tree
     char *delim = "\t\n"; //delimiter
     char *token;
     int i = 0,j=0;
@@ -37,7 +37,7 @@ void parseFile(FILE *fp, struct tree **root, int key){
             i++;
         }
         
-        treeInitInsert(&(*root), dataEntries, key);
+        treeInitInsert(&(*root), dataEntries, key, isUserData);
         i=0;
     }
     //CLEARBUF()
@@ -46,7 +46,9 @@ void parseFile(FILE *fp, struct tree **root, int key){
 void writeTreeToFile(const struct tree *root, FILE *fp){
     if(root != 0){
         writeTreeToFile(root->child[0], fp);
-        fprintf(fp, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", root->tconst, root->titleType, root->primaryTitle, root->originalTitle, root->genres, root->isAdult, root->startYear, root->endYear, root->runtimeMinutes);
+        fprintf(fp, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%d/%d/%d\n", root->tconst, root->titleType, root->primaryTitle, root->originalTitle, 
+                                                                        root->isAdult, root->startYear, root->endYear, root->runtimeMinutes, root->genres, 
+                                                                        root->mediaType, root->dateAcquired->month, root->dateAcquired->day, root->dateAcquired->year);
         writeTreeToFile(root->child[1], fp);
     }
 }
@@ -54,7 +56,7 @@ void writeTreeToFile(const struct tree *root, FILE *fp){
 void editUserDataForEntry(struct tree *node){
     if(node->mediaType == NULL && node->dateAcquired == NULL){
         node->mediaType = malloc(sizeof(char)*9);
-        node->mediaType = malloc(sizeof(*node->dateAcquired));
+        node->dateAcquired = malloc(sizeof(*node->dateAcquired));
     }
     int choice=0, isvalid = 0, items=0;
     char buffer[12];

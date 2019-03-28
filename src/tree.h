@@ -51,7 +51,7 @@ struct tree {
 void treeDestroy(struct tree **root);
 
 /* insert an element into a tree pointed to by root */
-void treeInitInsert(struct tree **root, char **newElement, int key);
+void treeInitInsert(struct tree **root, char **newElement, int key, bool isUserData);
 
 /* return 1 if target is in tree, 0 otherwise */
 /* we allow root to be modified to allow for self-balancing trees */
@@ -92,6 +92,6 @@ void resetCount();
 
 char *lowerCaseString(char *input);
 
-void treeUserInsert(struct tree **user, struct tree *node);
+struct tree *treeUserInsert(struct tree **user, struct tree *node);
 
 struct tree *treeSpecificSearch(struct tree *root, char *term);

@@ -159,14 +159,12 @@ void  treeDestroy(struct tree **root){
     }
 }
 
-void treeUserInsert(struct tree **user, struct tree *node){
+struct tree *treeUserInsert(struct tree **user, struct tree *node){
     struct tree *e;
     if(*user == 0) {
         e = malloc(sizeof(*e));
         assert(e);
         //*e->tconst = malloc();
-        puts(node->tconst);
-        printf("-------\n");
         strncpy(e->tconst, node->tconst, strlen(node->tconst));
         strncpy(e->titleType, node->titleType, strlen(node->titleType));
         strncpy(e->primaryTitle, node->primaryTitle, strlen(node->primaryTitle));
@@ -180,9 +178,10 @@ void treeUserInsert(struct tree **user, struct tree *node){
         e->child[LEFT] = e->child[RIGHT] = 0;
 
         *user = e;
+        return e;
     } else if((*user)->key == node->key) {
         /* already there, do nothing */
-        return;
+        return NULL;
     } else {
         /* do this recursively so we can fix data on the way back out */
         //printf("hi\n");
@@ -199,8 +198,10 @@ void treeUserInsert(struct tree **user, struct tree *node){
 }
 
 /* insert an element into a tree pointed to by root */
-void treeInitInsert(struct tree **root, char **newElement, int key){
+void treeInitInsert(struct tree **root, char **newElement, int key, bool isUserData){
     struct tree *e;
+    char *delim = "/";
+    char *token;
     int j =0;
     if(*root == 0) {
         e = malloc(sizeof(*e));
@@ -216,6 +217,18 @@ void treeInitInsert(struct tree **root, char **newElement, int key){
         strncpy(e->endYear, newElement[6], strlen(newElement[6]));
         strncpy(e->runtimeMinutes, newElement[7], strlen(newElement[7]));
         strncpy(e->genres, newElement[8], strlen(newElement[8]));
+        if(isUserData){
+            e->mediaType = malloc(sizeof(char)*10);
+            e->dateAcquired = malloc(sizeof(*e->dateAcquired));
+            strncpy(e->mediaType, newElement[9], strlen(newElement[9]));
+            token = strtok(newElement[10], delim);
+            e->dateAcquired->month = atoi(token);
+            token = strtok(NULL, delim);
+            e->dateAcquired->day = atoi(token);
+            token = strtok(NULL, delim);
+            e->dateAcquired->year = atoi(token);
+        }
+
         e->key = newElement[key];
         e->child[LEFT] = e->child[RIGHT] = 0;
 
@@ -227,9 +240,9 @@ void treeInitInsert(struct tree **root, char **newElement, int key){
         /* do this recursively so we can fix data on the way back out */
         //treeInsert(&(*root)->child[(*root)->key < newElement], newElement);
         if(strcmp(newElement[key],(*root)->key) < 0){
-            treeInitInsert(&(*root)->child[0], newElement, key);
+            treeInitInsert(&(*root)->child[0], newElement, key, isUserData);
         }else if(strcmp(newElement[key],(*root)->key) > 0){
-            treeInitInsert(&(*root)->child[1], newElement, key);
+            treeInitInsert(&(*root)->child[1], newElement, key, isUserData);
         }
     }
 
@@ -271,14 +284,13 @@ void treeDelete(struct tree **root, char *target){
 
     /* do nothing if target not in tree */
     if(*root) {
-        //printf("sup\n");
-        //printf("key: %s\n", (*root)->titleType);
-        //(*root)->key == target
-        if(strncmp((*root)->key,target,9) == 0) {
-            //printf("Match\n");
+        puts(target);
+        puts((*root)->tconst);
+        if(strncmp((*root)->tconst,target,9) == 0) {
+            printf("Match\n");
             if((*root)->child[RIGHT]) {
                 /* replace root with min value in right subtree */
-                strcpy((*root)->key,treeDeleteMin(&(*root)->child[RIGHT]));
+                strcpy((*root)->tconst,treeDeleteMin(&(*root)->child[RIGHT]));
             } else {
                 /* patch out root */
                 toFree = *root;
@@ -287,9 +299,9 @@ void treeDelete(struct tree **root, char *target){
             }
         } else {
             //treeDelete(&(*root)->child[(*root)->key < target], target);
-            if(strncmp(target,(*root)->key,9) < 0){
+            if(strncmp(target,(*root)->tconst,9) < 0){
                 treeDelete(&(*root)->child[0], target);
-            }else if(strncmp(target,(*root)->key,9) > 0){
+            }else if(strncmp(target,(*root)->tconst,9) > 0){
                 treeDelete(&(*root)->child[1], target);
             }
         }
@@ -378,16 +390,15 @@ struct tree *treeSpecificSearch(struct tree *root, char *term){
 }
 
 void treeSinglePrint(const struct tree *root, bool isUserData){
-    printf(" - Index: %.9s Title:%s Adult: ", root->tconst, root->primaryTitle);
+    printf("\n - Index: %.9s | Title:%s Adult: ", root->tconst, root->primaryTitle);
     if(strchr(root->isAdult, '0')) // Making the isAdult data user readable
-        printf("No ");
+        printf("No |");
     else
-        printf("Yes ");
-    printf("Year: %s Runtime: %s Genres: %s\n", root->startYear, root->runtimeMinutes, root->genres);
+        printf("Yes |");
+    printf("Year: %s | Runtime: %s | Genres: %s\n", root->startYear, root->runtimeMinutes, root->genres);
     if(isUserData){
-        //char buf[50];
-        printf("%s",root->mediaType);
-        //sprintf(buf, "%d/%d/%d", root->dateAcquired->month, root->dateAcquired->day, root->dateAcquired->year);
-        //printf("USER DATA - Media Type: %s Date Acquired: %s\n", root->mediaType, buf);
+        char buf[50];
+        sprintf(buf, "%d/%d/%d", root->dateAcquired->month, root->dateAcquired->day, root->dateAcquired->year);
+        printf("USER DATA - Media Type: %s | Date Acquired: %s\n\n", root->mediaType, buf);
     }
 }
