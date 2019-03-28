@@ -13,6 +13,7 @@
 #define RIGHT (1)
 #define TREE_NUM_CHILDREN (2)
 #define MAX_CHAR 200
+#define bool _Bool
 static int count = 0;
 
 struct time {
@@ -28,15 +29,15 @@ struct tree {
     struct time *dateAcquired;
 
     //IMDB Database Information
-    char tconst[9];
+    char tconst[10];
     char titleType[30];
     char primaryTitle[MAX_CHAR];
     char originalTitle[MAX_CHAR];
-    char genres[MAX_CHAR];
     char isAdult[4];
-    char startYear[4];
-    char endYear[4];
-    char runtimeMinutes[30];
+    char startYear[5];
+    char endYear[5];
+    char runtimeMinutes[5];
+    char genres[MAX_CHAR];
 
     char *key;
     int height;    /* height of this node */
@@ -67,13 +68,13 @@ void treeDelete(struct tree **root, char *target);
 /* return height of tree */
 int treeHeight(const struct tree *root);
 
-void treeSinglePrint(const struct tree *root);
+void treeSinglePrint(const struct tree *root, bool isUserData);
 
 /* return size of tree */
 size_t treeSize(const struct tree *root);
 
 /* pretty-print the contents of a tree */
-void treePrint(const struct tree *root);
+void treePrint(const struct tree *root, bool isUserData);
 
 /* return the number of elements in tree less than target */
 size_t treeRank(const struct tree *root, int target);

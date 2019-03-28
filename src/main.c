@@ -93,12 +93,12 @@ int main(int argc, char* argv[]){
                 searchTree(movie_tree, search);
                 printf("Type in index number (ttXXXXXX): ");
                 fgets(search, 10, stdin);
-                puts(search);
                 struct tree *tempNode = treeSpecificSearch(tt_movie_tree, search);
                 if(tempNode == NULL)
                     break;
+                editUserDataForEntry(tempNode);
                 treeUserInsert(&user_tree, tempNode);
-                treePrint(user_tree);
+                treePrint(user_tree, true);
                 clearEOL();
                 //Ask for date or just use current date
                 //Digital, bluray, or dvd
@@ -106,7 +106,7 @@ int main(int argc, char* argv[]){
             case '2': //WORKS
                 printf("Remove Movie from Log\n");
                 clearEOL();
-                treePrint(user_tree);
+                treePrint(user_tree, true);
                 printf("Enter index number to delete (ttXXXXXX): ");
                 fgets(search, 10, stdin);
                 if((p = strchr(search, '\n'))) *p = 0;
@@ -117,7 +117,7 @@ int main(int argc, char* argv[]){
                 break;
             case '3':
                 printf("List Movie Log\n"); //WORKS
-                treePrint(user_tree);
+                treePrint(user_tree, true);
                 getchar();
                 clearEOL();
                 break;

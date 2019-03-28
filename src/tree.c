@@ -3,9 +3,11 @@
 #include <assert.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
+#include <unistd.h>
 #include "tree.h"
 #include "io.h"
 
@@ -163,16 +165,17 @@ void treeUserInsert(struct tree **user, struct tree *node){
         e = malloc(sizeof(*e));
         assert(e);
         //*e->tconst = malloc();
-        strncpy(e->tconst, node->tconst, 9);
-        strncpy(e->titleType, node->titleType, 30);
-        strncpy(e->primaryTitle, node->primaryTitle, 200);
-        strncpy(e->originalTitle, node->originalTitle, 200);
-        strncpy(e->genres, node->genres, 200);
-        strncpy(e->isAdult, node->isAdult, 4);
-        strncpy(e->startYear, node->startYear, 4);
-        strncpy(e->endYear, node->endYear, 4);
-        strncpy(e->runtimeMinutes, node->runtimeMinutes, 30);
-        //printf("test\n");
+        puts(node->tconst);
+        printf("-------\n");
+        strncpy(e->tconst, node->tconst, strlen(node->tconst));
+        strncpy(e->titleType, node->titleType, strlen(node->titleType));
+        strncpy(e->primaryTitle, node->primaryTitle, strlen(node->primaryTitle));
+        strncpy(e->originalTitle, node->originalTitle, strlen(node->originalTitle));
+        strncpy(e->isAdult, node->isAdult, strlen(node->isAdult));
+        strncpy(e->startYear, node->startYear, strlen(node->startYear));
+        strncpy(e->endYear, node->endYear, strlen(node->endYear));
+        strncpy(e->runtimeMinutes, node->runtimeMinutes, strlen(node->runtimeMinutes));
+        strncpy(e->genres, node->genres, strlen(node->genres));
         e->key = node->tconst;
         e->child[LEFT] = e->child[RIGHT] = 0;
 
@@ -198,20 +201,21 @@ void treeUserInsert(struct tree **user, struct tree *node){
 /* insert an element into a tree pointed to by root */
 void treeInitInsert(struct tree **root, char **newElement, int key){
     struct tree *e;
-
+    int j =0;
     if(*root == 0) {
         e = malloc(sizeof(*e));
         assert(e);
         //*e->tconst = malloc();
-        strncpy(e->tconst,newElement[0], strlen(newElement[0]));
+        //sleep(1);
+        strncpy(e->tconst, newElement[0], strlen(newElement[0]));
         strncpy(e->titleType,newElement[1], strlen(newElement[1]));
         strncpy(e->primaryTitle, newElement[2], strlen(newElement[2]));
         strncpy(e->originalTitle, newElement[3], strlen(newElement[3]));
-        strncpy(e->genres, newElement[4], strlen(newElement[4]));
-        strncpy(e->isAdult, newElement[5], strlen(newElement[5]));
-        strncpy(e->startYear, newElement[6], strlen(newElement[6]));
-        strncpy(e->endYear, newElement[7], strlen(newElement[7]));
-        strncpy(e->runtimeMinutes, newElement[8], strlen(newElement[8]));
+        strncpy(e->isAdult, newElement[4], strlen(newElement[4]));
+        strncpy(e->startYear, newElement[5], strlen(newElement[5]));
+        strncpy(e->endYear, newElement[6], strlen(newElement[6]));
+        strncpy(e->runtimeMinutes, newElement[7], strlen(newElement[7]));
+        strncpy(e->genres, newElement[8], strlen(newElement[8]));
         e->key = newElement[key];
         e->child[LEFT] = e->child[RIGHT] = 0;
 
@@ -267,11 +271,11 @@ void treeDelete(struct tree **root, char *target){
 
     /* do nothing if target not in tree */
     if(*root) {
-        printf("sup\n");
-        printf("key: %s\n", (*root)->titleType);
+        //printf("sup\n");
+        //printf("key: %s\n", (*root)->titleType);
         //(*root)->key == target
         if(strncmp((*root)->key,target,9) == 0) {
-            printf("Match\n");
+            //printf("Match\n");
             if((*root)->child[RIGHT]) {
                 /* replace root with min value in right subtree */
                 strcpy((*root)->key,treeDeleteMin(&(*root)->child[RIGHT]));
@@ -297,11 +301,11 @@ void treeDelete(struct tree **root, char *target){
 }
 
 /* print the contents of a tree */
-void treePrint(const struct tree *root){
+void treePrint(const struct tree *root, bool isUserData){
     if(root != 0) {
-        treePrint(root->child[LEFT]);
-        treeSinglePrint(root);
-        treePrint(root->child[RIGHT]);
+        treePrint(root->child[LEFT], isUserData);
+        treeSinglePrint(root, isUserData);
+        treePrint(root->child[RIGHT], isUserData);
     }
 }
 
@@ -326,7 +330,7 @@ void lookForSimilar(const struct tree *root, char *term){
         //if(strstr(root->key, term) != NULL){
             lookForSimilar(root->child[LEFT], term);
             if(strstr(root->key, term) != NULL)
-                treeSinglePrint(root);
+                treeSinglePrint(root, false);
             lookForSimilar(root->child[RIGHT], term);
         //}
     }
@@ -373,6 +377,17 @@ struct tree *treeSpecificSearch(struct tree *root, char *term){
     }
 }
 
-void treeSinglePrint(const struct tree *root){
-    printf(" - Index: %.9s Title:%s %s %s %s %s %s %s\n", root->tconst, root->primaryTitle, root->originalTitle, root->genres, root->isAdult, root->startYear, root->endYear, root->runtimeMinutes);
+void treeSinglePrint(const struct tree *root, bool isUserData){
+    printf(" - Index: %.9s Title:%s Adult: ", root->tconst, root->primaryTitle);
+    if(strchr(root->isAdult, '0')) // Making the isAdult data user readable
+        printf("No ");
+    else
+        printf("Yes ");
+    printf("Year: %s Runtime: %s Genres: %s\n", root->startYear, root->runtimeMinutes, root->genres);
+    if(isUserData){
+        //char buf[50];
+        printf("%s",root->mediaType);
+        //sprintf(buf, "%d/%d/%d", root->dateAcquired->month, root->dateAcquired->day, root->dateAcquired->year);
+        //printf("USER DATA - Media Type: %s Date Acquired: %s\n", root->mediaType, buf);
+    }
 }
