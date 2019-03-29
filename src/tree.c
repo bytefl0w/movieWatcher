@@ -140,11 +140,11 @@ static void treeRebalance(struct tree **root){
 }
 
 /* free all elements of a tree, replacing it with TREE_EMPTY */
-void  treeDestroy(struct tree **root){
+void  treeDestroy(struct tree **root, bool isUserData){
     int i;
     if(*root) {
         for(i = 0; i < TREE_NUM_CHILDREN; i++) {
-            treeDestroy(&(*root)->child[i]);
+            treeDestroy(&(*root)->child[i], isUserData);
         }
         free((*root)->tconst);
         free((*root)->titleType);
@@ -155,8 +155,10 @@ void  treeDestroy(struct tree **root){
         free((*root)->endYear);
         free((*root)->runtimeMinutes);
         free((*root)->genres);
-        free((*root)->mediaType);
-        free((*root)->dateAcquired);
+        if(isUserData){
+            free((*root)->mediaType);
+            free((*root)->dateAcquired);
+        }
         free(*root);
         *root = TREE_EMPTY;
     }
@@ -180,15 +182,15 @@ struct tree *treeUserInsert(struct tree **user, struct tree *node){
         e->mediaType = (char*)malloc(sizeof(char)*11);
         e->dateAcquired = malloc(sizeof(*e->dateAcquired));
 
-        strcpy(e->tconst, node->tconst);
-        strcpy(e->titleType, node->titleType);
-        strcpy(e->primaryTitle, node->primaryTitle);
-        strcpy(e->originalTitle, node->originalTitle);
-        strcpy(e->isAdult, node->isAdult);
-        strcpy(e->startYear, node->startYear);
-        strcpy(e->endYear, node->endYear);
-        strcpy(e->runtimeMinutes, node->runtimeMinutes);
-        strcpy(e->genres, node->genres);
+        strncpy(e->tconst, node->tconst, strlen(node->tconst)+1);
+        strncpy(e->titleType, node->titleType, strlen(node->titleType)+1);
+        strncpy(e->primaryTitle, node->primaryTitle, strlen(node->primaryTitle)+1);
+        strncpy(e->originalTitle, node->originalTitle, strlen(node->originalTitle)+1);
+        strncpy(e->isAdult, node->isAdult, strlen(node->isAdult)+1);
+        strncpy(e->startYear, node->startYear, strlen(node->startYear)+1);
+        strncpy(e->endYear, node->endYear, strlen(node->endYear)+1);
+        strncpy(e->runtimeMinutes, node->runtimeMinutes, strlen(node->runtimeMinutes)+1);
+        strncpy(e->genres, node->genres, strlen(node->genres)+1);
 
         e->key = node->tconst;
         e->child[LEFT] = e->child[RIGHT] = 0;
@@ -224,35 +226,25 @@ void treeInitInsert(struct tree **root, char **newElement, int key, bool isUserD
         //puts("Made it\n");
         e = malloc(sizeof(*e));
         assert(e);
-        e->tconst = malloc(sizeof(e->tconst)*strlen(newElement[0])+1);
-        e->titleType = malloc(sizeof(e->titleType)*strlen(newElement[1])+1);
-        e->primaryTitle = malloc(sizeof(e->primaryTitle)*strlen(newElement[2])+1);
-        e->originalTitle = malloc(sizeof(e->originalTitle)*strlen(newElement[3])+1);
-        e->isAdult = malloc(sizeof(e->isAdult)*strlen(newElement[4])+1);
-        e->startYear = malloc(sizeof(e->startYear)*strlen(newElement[5])+1);
-        e->endYear = malloc(sizeof(e->endYear)*strlen(newElement[6])+1);
-        e->runtimeMinutes = malloc(sizeof(e->runtimeMinutes)*strlen(newElement[7])+1);
-        e->genres = malloc(sizeof(e->genres)*strlen(newElement[8])+1);
+        e->tconst = malloc(sizeof(e->tconst)*strlen(newElement[0]));
+        e->titleType = malloc(sizeof(e->titleType)*strlen(newElement[1]));
+        e->primaryTitle = malloc(sizeof(e->primaryTitle)*strlen(newElement[2]));
+        e->originalTitle = malloc(sizeof(e->originalTitle)*strlen(newElement[3]));
+        e->isAdult = malloc(sizeof(e->isAdult)*strlen(newElement[4]));
+        e->startYear = malloc(sizeof(e->startYear)*strlen(newElement[5]));
+        e->endYear = malloc(sizeof(e->endYear)*strlen(newElement[6]));
+        e->runtimeMinutes = malloc(sizeof(e->runtimeMinutes)*strlen(newElement[7]));
+        e->genres = malloc(sizeof(e->genres)*strlen(newElement[8]));
 
-        //strncpy(e->tconst, newElement[0], strlen(newElement[0]));
-        //strncpy(e->titleType,newElement[1], strlen(newElement[1]));
-        //strncpy(e->primaryTitle, newElement[2], strlen(newElement[2]));
-        //strncpy(e->originalTitle, newElement[3], strlen(newElement[3]));
-        //strncpy(e->isAdult, newElement[4], strlen(newElement[4]));
-        //strncpy(e->startYear, newElement[5], strlen(newElement[5]));
-        //strncpy(e->endYear, newElement[6], strlen(newElement[6]));
-        //strncpy(e->runtimeMinutes, newElement[7], strlen(newElement[7]));
-        //strncpy(e->genres, newElement[8], strlen(newElement[8]));
-
-        strcpy(e->tconst, newElement[0]);
-        strcpy(e->titleType,newElement[1]);
-        strcpy(e->primaryTitle, newElement[2]);
-        strcpy(e->originalTitle, newElement[3]);
-        strcpy(e->isAdult, newElement[4]);
-        strcpy(e->startYear, newElement[5]);
-        strcpy(e->endYear, newElement[6]);
-        strcpy(e->runtimeMinutes, newElement[7]);
-        strcpy(e->genres, newElement[8]);
+        strncpy(e->tconst, newElement[0], strlen(newElement[0])+1);
+        strncpy(e->titleType,newElement[1], strlen(newElement[1])+1);
+        strncpy(e->primaryTitle, newElement[2], strlen(newElement[2])+1);
+        strncpy(e->originalTitle, newElement[3], strlen(newElement[3])+1);
+        strncpy(e->isAdult, newElement[4], strlen(newElement[4])+1);
+        strncpy(e->startYear, newElement[5], strlen(newElement[5])+1);
+        strncpy(e->endYear, newElement[6], strlen(newElement[6])+1);
+        strncpy(e->runtimeMinutes, newElement[7], strlen(newElement[7])+1);
+        strncpy(e->genres, newElement[8], strlen(newElement[8])+1);
 
         if(isUserData){
             e->mediaType = malloc(sizeof(char)*11);

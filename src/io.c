@@ -4,6 +4,7 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
@@ -31,7 +32,7 @@ char *lowerCaseString(int c, char input[c]){
 //}
 
 void parseFile(FILE *fp, struct tree **root, char **dataEntries, int key, bool isUserData, bool keyTitle){
-    char lineBuf[450]; //line buffer of the file
+    char lineBuf[500]; //line buffer of the file
     //char dataEntries[11][200]; //data parsed from the file that will be put into a node of the AVL tree
     char *delim = "\t\n"; //delimiter
     char *token;
@@ -60,36 +61,40 @@ void writeTreeToFile(const struct tree *root, FILE *fp){
 }
 
 void editUserDataForEntry(struct tree *node, bool isInit){
-    int choice=0, isvalid = 0, items=0;
+    int choice=0, items=0;
+    bool isValid = false;
     char buffer[12];
-    while(isvalid == 0){
+    while(!isValid){
         printf("Media Type (1=dvd, 2=bluray, 3=digital): ");
-        scanf("%d", &choice);
+        fgets(buffer, 1, stdin);
+        items = sscanf(buffer, "%1c", &node->dateAcquired->month, &node->dateAcquired->day, &node->dateAcquired->year);
         switch(choice){
             case 1:
                 strcpy(node->mediaType,"dvd");
-                isvalid = 1;
+                isValid = true;
                 break;
             case 2:
                 strcpy(node->mediaType,"bluray");
-                isvalid = 1;
+                isValid = true;
                 break;
             case 3:
                 strcpy(node->mediaType,"digital");
-                isvalid = 1;
+                isValid = true;
                 break;
             default:
                 printf("Error. Invalid input, try again.\n");
                 break;
         }
     }
-    isvalid = 0;
-    while(isvalid == 0){
+    isValid = false;
+    while(!isValid){
         printf("Date Acquired (MM/DD/YYYY): ");
-        items = scanf("%02d/%02d/%04d", &node->dateAcquired->month, &node->dateAcquired->day, &node->dateAcquired->year);
+        //items = scanf("%02d/%02d/%04d", &node->dateAcquired->month, &node->dateAcquired->day, &node->dateAcquired->year);
+        fgets(buffer, 10, stdin);
+        items = sscanf(buffer, "%02d/%02d/%04d", &node->dateAcquired->month, &node->dateAcquired->day, &node->dateAcquired->year);
         if(items == 3){
             //node->dateAcquired = dateAcquired;
-            isvalid = 1;
+            isValid = true;
         } else if(items == 0){
             time_t rawtime;
             struct tm *timeinfo;

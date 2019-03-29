@@ -37,12 +37,12 @@ int main(int argc, char* argv[]){
     char fileLocation[33] = "./usr/";
     char input[25], ch, search[200], *p = NULL;
 
-    int i=0, char_count=0, row=11, col[11]={10, 10, 200, 200, 7, 7, 7, 7, 100, 12, 12};
+    int i=0, char_count=0, row=11, col[11]={20, 20, 400, 400, 20, 20, 20, 20, 200, 20, 20};
 
     char **dataEntries;
-    dataEntries = malloc(row * sizeof *dataEntries );
+    dataEntries = (char**)malloc(row * sizeof(char*));
     for(i=0;i<row;i++)
-        dataEntries[i] = malloc(col[i] * sizeof *dataEntries[i]);
+        dataEntries[i] = (char*)malloc(col[i] * sizeof(char));
 
     printf("***movieWatcher Program***\n****Welcome****\n");
     if(movies == NULL){
@@ -86,6 +86,9 @@ int main(int argc, char* argv[]){
         }
     }
     exit_flag = false;
+    for(i=0;i<row;i++)
+        free(dataEntries[i]);
+    free(dataEntries);
     while(!exit_flag){
         printf("Welcome %s!\n", input);
         printf("[1] Add Movie to Log\n");
@@ -102,7 +105,7 @@ int main(int argc, char* argv[]){
                 fgets(search, 200, stdin);
                 if((p = strchr(search, '\n'))) *p = 0;
                 searchTree(movie_tree, lowerCaseString(200, search));
-                printf("Type in index number (ttXXXXXX): ");
+                printf("Type in index number (ttXXXXXXX): ");
                 fgets(search, 10, stdin);
                 tempNode = treeSpecificSearch(tt_movie_tree, search);
                 if(tempNode == NULL)
@@ -159,11 +162,8 @@ int main(int argc, char* argv[]){
         }
     }
     //Freeing Dynamically Allocated memory
-    //treeDestroy(&tt_movie_tree);
-    //treeDestroy(&movie_tree);
-    //treeDestroy(&user_tree);
-    //for(i=0;i<row;i++)
-    //    free(dataEntries[i]);
-    //free(dataEntries);
+    treeDestroy(&tt_movie_tree, false);
+    treeDestroy(&movie_tree, false);
+    treeDestroy(&user_tree, true);
     return 0;
 }

@@ -48,7 +48,7 @@ struct tree {
 #define TREE_EMPTY_HEIGHT (-1)
 
 /* free all elements of a tree, replacing it with TREE_EMPTY */
-void treeDestroy(struct tree **root);
+void treeDestroy(struct tree **root, bool isUserData);
 
 /* insert an element into a tree pointed to by root */
 void treeInitInsert(struct tree **root, char **newElement, int key, bool isUserData, bool keyTitle);
