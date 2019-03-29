@@ -29,15 +29,15 @@ struct tree {
     struct time *dateAcquired;
 
     //IMDB Database Information
-    char tconst[10];
-    char titleType[30];
-    char primaryTitle[MAX_CHAR];
-    char originalTitle[MAX_CHAR];
-    char isAdult[4];
-    char startYear[5];
-    char endYear[5];
-    char runtimeMinutes[5];
-    char genres[MAX_CHAR];
+    char *tconst;
+    char *titleType;
+    char *primaryTitle;
+    char *originalTitle;
+    char *isAdult;
+    char *startYear;
+    char *endYear;
+    char *runtimeMinutes;
+    char *genres;
 
     char *key;
     int height;    /* height of this node */
@@ -51,7 +51,7 @@ struct tree {
 void treeDestroy(struct tree **root);
 
 /* insert an element into a tree pointed to by root */
-void treeInitInsert(struct tree **root, char **newElement, int key, bool isUserData);
+void treeInitInsert(struct tree **root, char **newElement, int key, bool isUserData, bool keyTitle);
 
 /* return 1 if target is in tree, 0 otherwise */
 /* we allow root to be modified to allow for self-balancing trees */
@@ -89,8 +89,6 @@ void treeSanityCheck(const struct tree *root);
 struct tree *searchTree(struct tree *root, char *term);
 
 void resetCount();
-
-char *lowerCaseString(char *input);
 
 struct tree *treeUserInsert(struct tree **user, struct tree *node);
 

@@ -14,30 +14,36 @@
 /* utility function to parse the "movie_records" file */
 struct tree;
 
-char *copyString(char str[]){
-    size_t len = strlen(str), i;
-    char *copy=(char*)malloc(len+1);
-    for(i=0;i<len;i++)
-        copy[i] = str[i];
-    copy[i] = '\0';
-    return copy;
+char *lowerCaseString(int c, char input[c]){
+    int i=0;
+    for(i=0; input[i]; i++) 
+        input[i] = tolower(input[i]);
+    return input;
 }
 
-void parseFile(FILE *fp, struct tree **root, int key, bool isUserData){
+//char *copyString(char str[]){
+//    size_t len = strlen(str), i;
+//    char *copy[len+1];
+//    for(i=0;i<len;i++)
+//        copy[i] = str[i];
+//    copy[i] = '\0';
+//    return copy;
+//}
+
+void parseFile(FILE *fp, struct tree **root, char **dataEntries, int key, bool isUserData, bool keyTitle){
     char lineBuf[450]; //line buffer of the file
-    char *dataEntries[11]; //data parsed from the file that will be put into a node of the AVL tree
+    //char dataEntries[11][200]; //data parsed from the file that will be put into a node of the AVL tree
     char *delim = "\t\n"; //delimiter
     char *token;
     int i = 0,j=0;
     while(fgets(lineBuf, sizeof(lineBuf), fp)){
         token = strtok(lineBuf, delim);
         while(token != NULL){
-            dataEntries[i] = copyString(token);
+            strcpy(dataEntries[i], token);
             token = strtok(NULL, delim);
             i++;
         }
-        
-        treeInitInsert(&(*root), dataEntries, key, isUserData);
+        treeInitInsert(&(*root), dataEntries, key, isUserData, keyTitle);
         i=0;
     }
     //CLEARBUF()
@@ -53,28 +59,23 @@ void writeTreeToFile(const struct tree *root, FILE *fp){
     }
 }
 
-void editUserDataForEntry(struct tree *node){
-    if(node->mediaType == NULL && node->dateAcquired == NULL){
-        node->mediaType = malloc(sizeof(char)*9);
-        node->dateAcquired = malloc(sizeof(*node->dateAcquired));
-    }
+void editUserDataForEntry(struct tree *node, bool isInit){
     int choice=0, isvalid = 0, items=0;
     char buffer[12];
-    struct time *dateAcquired = malloc(sizeof(*dateAcquired));
     while(isvalid == 0){
         printf("Media Type (1=dvd, 2=bluray, 3=digital): ");
         scanf("%d", &choice);
         switch(choice){
             case 1:
-                node->mediaType = copyString("dvd");
+                strcpy(node->mediaType,"dvd");
                 isvalid = 1;
                 break;
             case 2:
-                node->mediaType = copyString("bluray");
+                strcpy(node->mediaType,"bluray");
                 isvalid = 1;
                 break;
             case 3:
-                node->mediaType = copyString("digital");
+                strcpy(node->mediaType,"digital");
                 isvalid = 1;
                 break;
             default:
@@ -85,9 +86,9 @@ void editUserDataForEntry(struct tree *node){
     isvalid = 0;
     while(isvalid == 0){
         printf("Date Acquired (MM/DD/YYYY): ");
-        items = scanf("%02d/%02d/%04d", &dateAcquired->month, &dateAcquired->day, &dateAcquired->year);
+        items = scanf("%02d/%02d/%04d", &node->dateAcquired->month, &node->dateAcquired->day, &node->dateAcquired->year);
         if(items == 3){
-            node->dateAcquired = dateAcquired;
+            //node->dateAcquired = dateAcquired;
             isvalid = 1;
         } else if(items == 0){
             time_t rawtime;

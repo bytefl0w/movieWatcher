@@ -30,20 +30,31 @@ int main(int argc, char* argv[]){
     struct tree *movie_tree = TREE_EMPTY;
     struct tree *tt_movie_tree = TREE_EMPTY;
     struct tree *user_tree = TREE_EMPTY;
+    struct tree *tempNode;
+
     bool exit_flag = false, valid_choice = false;
+
     char fileLocation[33] = "./usr/";
     char input[25], ch, search[200], *p = NULL;
-    int i=0, char_count=0;
+
+    int i=0, char_count=0, row=11, col[11]={10, 10, 200, 200, 7, 7, 7, 7, 100, 12, 12};
+
+    char **dataEntries;
+    dataEntries = malloc(row * sizeof *dataEntries );
+    for(i=0;i<row;i++)
+        dataEntries[i] = malloc(col[i] * sizeof *dataEntries[i]);
+
     printf("***movieWatcher Program***\n****Welcome****\n");
     if(movies == NULL){
         printf("No movie_records file found. Exiting...\n");
         exit(EXIT_FAILURE);
     }else{
         printf("Loading...\n");
-        parseFile(movies, &movie_tree, 2, false);
+        parseFile(movies, &movie_tree, dataEntries, 2, false, true);
         fclose(movies);
         movies = fopen("movie_records", "r+");
-        parseFile(movies, &tt_movie_tree, 0, false);
+        parseFile(movies, &tt_movie_tree, dataEntries, 0, false, false);
+        fclose(movies);
     }
     system("ls usr/");
     while(!exit_flag){
@@ -70,13 +81,12 @@ int main(int argc, char* argv[]){
             user = fopen(fileLocation, "r+");
             if(user == NULL)
                 user = fopen(fileLocation, "w+");
-            parseFile(user, &user_tree, 2, true);
+            parseFile(user,  &user_tree, dataEntries, 0, true, false);
             exit_flag = true;
         }
     }
     exit_flag = false;
     while(!exit_flag){
-        //system("clear");
         printf("Welcome %s!\n", input);
         printf("[1] Add Movie to Log\n");
         printf("[2] Remove Movie from Log\n");
@@ -88,19 +98,20 @@ int main(int argc, char* argv[]){
             case '1':
                 clearEOL();
                 printf("Add Movie to Log\n");
+                printf("Enter in title of movie: ");
                 fgets(search, 200, stdin);
                 if((p = strchr(search, '\n'))) *p = 0;
-                searchTree(movie_tree, search);
+                searchTree(movie_tree, lowerCaseString(200, search));
                 printf("Type in index number (ttXXXXXX): ");
                 fgets(search, 10, stdin);
-                struct tree *tempNode = treeSpecificSearch(tt_movie_tree, search);
+                tempNode = treeSpecificSearch(tt_movie_tree, search);
                 if(tempNode == NULL)
                     break;
-                editUserDataForEntry(treeUserInsert(&user_tree, tempNode));
+                treeUserInsert(&user_tree, tempNode);
+                tempNode = treeSpecificSearch(user_tree, search);
+                editUserDataForEntry(tempNode, true);
                 treePrint(user_tree, true);
                 clearEOL();
-                //Ask for date or just use current date
-                //Digital, bluray, or dvd
                 break;
             case '2': 
                 printf("Remove Movie from Log\n");
@@ -113,22 +124,32 @@ int main(int argc, char* argv[]){
                 clearEOL();
                 break;
             case '3':
-                printf("List Movie Log\n"); //WORKS
+                printf("List Movie Log\n");
                 treePrint(user_tree, true);
                 getchar();
                 clearEOL();
                 break;
             case '4':
+                clearEOL();
                 printf("Update Movie Entry\n");
-                
+                treePrint(user_tree, true);
+                printf("Type in index number (ttXXXXXX): ");
+                fgets(search, 10, stdin);
+                if((p = strchr(search, '\n'))) *p = 0;
+                struct tree *tempNode = treeSpecificSearch(user_tree, search);
+                if(tempNode == NULL)
+                    break;
+                editUserDataForEntry(tempNode, false);
+                treePrint(user_tree, true);
                 clearEOL();
                 break;
             case '5': //WORKS
                 printf("Save and Quit\n");
                 fclose(user);
-                fopen(fileLocation, "w");
+                user = fopen(fileLocation, "w");
                 writeTreeToFile(user_tree, user);
                 exit_flag = true;
+                fclose(user);
                 clearEOL();
                 break;
             default: //WORKS
@@ -137,18 +158,12 @@ int main(int argc, char* argv[]){
                 break;
         }
     }
-
-    //FILE *fp = fopen(argv[1],"r+");
-    //struct tree *root = TREE_EMPTY;
-    //parseFile(fp, &root, 2);
-    //treePrint(root);
-    //printf("Print\n");
-    //searchTree(&root, "tt6172666");
-    //searchTree(&root, "tt0000000");
-    //searchTree(&root, "tt2395427");
-    //treeDestroy(&root);
-    //fclose(fp);
-    fclose(user);
-    fclose(movies);
+    //Freeing Dynamically Allocated memory
+    //treeDestroy(&tt_movie_tree);
+    //treeDestroy(&movie_tree);
+    //treeDestroy(&user_tree);
+    //for(i=0;i<row;i++)
+    //    free(dataEntries[i]);
+    //free(dataEntries);
     return 0;
 }

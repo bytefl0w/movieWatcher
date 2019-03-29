@@ -6,22 +6,20 @@ TARGET := movieWatcher
 SOURCES := $(shell find $(SOURCEDIR) -type f -name *.c)
 OBJECTS := $(patsubst $(SOURCEDIR)/%,$(BUILDDIR)/%,$(SOURCES:.c=.o))
 CFLAGS := -g -std=c11 # -Wall
-LIB := -lncurses -lpanel -lmenu
-INC := -I include
 
 $(TARGET): $(OBJECTS)
 	@echo " Linking..."
-	@echo " $(CC) $^ -o $(TARGET) $(LIB)"; $(CC) $^ -o $(TARGET) $(LIB)
+	@echo " $(CC) $^ -o $(TARGET)"; $(CC) $^ -o $(TARGET)
 
 $(BUILDDIR)/%.o: $(SOURCEDIR)/%.c
 	@mkdir -p $(BUILDDIR)
-	@echo " $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c -o $@ $<
+	@echo " $(CC) $(CFLAGS) -c -o $@ $<"; $(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
 	@echo " Cleaning..."
 	@echo " $(RM) -r $(BUILDDIR) $(TARGET)"; $(RM) -r $(BUILDDIR) $(TARGET)
 
 test:
-	$(CC) $(CFLAGS) $^ test/testing.c $(INC) $(LIB) -o bin/testing
+	$(CC) $(CFLAGS) $^ test/testing.c -o bin/testing
 
 .PHONY: clean
