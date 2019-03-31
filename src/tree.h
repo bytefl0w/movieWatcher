@@ -59,7 +59,7 @@ int treeContains(const struct tree *root, int target);
 
 /* delete minimum element from the tree and return its key */
 /* do not call this on an empty tree */
-char *treeDeleteMin(struct tree **root);
+struct tree *treeDeleteMin(struct tree **root);
 
 /* delete target from the tree */
 /* has no effect if target is not in tree */

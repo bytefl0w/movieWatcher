@@ -12,9 +12,18 @@
 #include "tree.h"
 #include "io.h"
 
-/* utility function to parse the "movie_records" file */
+
 struct tree;
 
+void clearEOL(){
+    char ch;
+    ch = getchar();
+    while(ch != '\n')
+        ch = getchar();
+    return;
+}
+
+//Utility function to lower case a string of characters
 char *lowerCaseString(int c, char input[c]){
     int i=0;
     for(i=0; input[i]; i++) 
@@ -22,18 +31,9 @@ char *lowerCaseString(int c, char input[c]){
     return input;
 }
 
-//char *copyString(char str[]){
-//    size_t len = strlen(str), i;
-//    char *copy[len+1];
-//    for(i=0;i<len;i++)
-//        copy[i] = str[i];
-//    copy[i] = '\0';
-//    return copy;
-//}
-
+//function that parses user log and movie database files
 void parseFile(FILE *fp, struct tree **root, char **dataEntries, int key, bool isUserData, bool keyTitle){
     char lineBuf[500]; //line buffer of the file
-    //char dataEntries[11][200]; //data parsed from the file that will be put into a node of the AVL tree
     char *delim = "\t\n"; //delimiter
     char *token;
     int i = 0,j=0;
@@ -47,9 +47,8 @@ void parseFile(FILE *fp, struct tree **root, char **dataEntries, int key, bool i
         treeInitInsert(&(*root), dataEntries, key, isUserData, keyTitle);
         i=0;
     }
-    //CLEARBUF()
 }
-// ultility for saving AVL tree to user log file after selecting "Save and Quit"
+// ultility for saving AVL tree to user loclearEOL()g file after selecting "Save and Quit"
 void writeTreeToFile(const struct tree *root, FILE *fp){
     if(root != 0){
         writeTreeToFile(root->child[0], fp);
@@ -60,37 +59,59 @@ void writeTreeToFile(const struct tree *root, FILE *fp){
     }
 }
 
+//Edit the user data for any movie entry
 void editUserDataForEntry(struct tree *node, bool isInit){
-    int choice=0, items=0;
+    char choice[4];
+    int items=0;
     bool isValid = false;
     char buffer[12];
     while(!isValid){
         printf("Media Type (1=dvd, 2=bluray, 3=digital): ");
-        fgets(buffer, 1, stdin);
-        items = sscanf(buffer, "%1c", &node->dateAcquired->month, &node->dateAcquired->day, &node->dateAcquired->year);
-        switch(choice){
-            case 1:
-                strcpy(node->mediaType,"dvd");
-                isValid = true;
-                break;
-            case 2:
-                strcpy(node->mediaType,"bluray");
-                isValid = true;
-                break;
-            case 3:
-                strcpy(node->mediaType,"digital");
-                isValid = true;
-                break;
-            default:
+        if(!fgets(choice, sizeof choice, stdin))
+            printf("Error. Invalid input, try again.\n");
+        else{
+            if(!strchr(choice, '\n')){
                 printf("Error. Invalid input, try again.\n");
-                break;
+                while(fgets(choice, sizeof choice, stdin) && !strchr(choice, '\n'));
+            }
+            else{
+                char *chk;
+                int temp = (int)strtol(choice, &chk, 10);
+                if(isspace(*chk) || *chk == 0){
+                    switch(temp){
+                        case 1:
+                            free(node->mediaType);
+                            node->mediaType = malloc(sizeof(char)*5);
+                            strcpy(node->mediaType,"dvd");
+                            isValid = true;
+                            break;
+                        case 2:
+                            free(node->mediaType);
+                            node->mediaType = malloc(sizeof(char)*8);
+                            strcpy(node->mediaType,"bluray");
+                            isValid = true;
+                            break;
+                        case 3:
+                            free(node->mediaType);
+                            node->mediaType = malloc(sizeof(char)*9);
+                            strcpy(node->mediaType,"digital");
+                            isValid = true;
+                            break;
+                        default:
+                            printf("Error. Invalid input, try again.\n");
+                            break;
+                    }
+                }
+                else
+                    printf("Error. Invalid input, try again.\n");
+            }
         }
     }
     isValid = false;
     while(!isValid){
         printf("Date Acquired (MM/DD/YYYY): ");
         //items = scanf("%02d/%02d/%04d", &node->dateAcquired->month, &node->dateAcquired->day, &node->dateAcquired->year);
-        fgets(buffer, 10, stdin);
+        fgets(buffer, 12, stdin);
         items = sscanf(buffer, "%02d/%02d/%04d", &node->dateAcquired->month, &node->dateAcquired->day, &node->dateAcquired->year);
         if(items == 3){
             //node->dateAcquired = dateAcquired;
