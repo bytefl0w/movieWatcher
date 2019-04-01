@@ -23,3 +23,7 @@ LINK: http://www.cs.yale.edu/homes/aspnes/classes/223/notes.html
 
 # Video
 https://www.youtube.com/channel/UCHxvMdVO0mWFop8EX4IkK0g
+
+# Additional Information
+Github ID: 21253659
+Link to github profile: https://github.com/egmortimer
