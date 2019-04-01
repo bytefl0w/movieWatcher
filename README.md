@@ -6,7 +6,7 @@ Portfolio Project for CS 201-001 Spring 2019
 Step 1: Download the IMDB dataset, unzip, and grep movies
 ```
 wget https://datasets.imdbws.com/title.basics.tsv.gz
-gzip title.basics.tsv.gz
+gzip -d title.basics.tsv.gz
 grep "movie" title.basics.tsv > movie_records
 ```
 
